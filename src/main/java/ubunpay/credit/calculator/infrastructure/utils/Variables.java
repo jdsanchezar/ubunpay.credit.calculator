@@ -1,4 +1,4 @@
-package ubunpay.credit.calculator.infrastructure.utils;
+package ubunpay.credit.calculator.credit.aplication.infrastructure.utils;
 
 public enum Variables {
     VALUE_STUDY_CREDIT(57000),
