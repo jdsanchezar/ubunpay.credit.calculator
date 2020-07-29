@@ -8,8 +8,10 @@ import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
 import ubunpay.credit.calculator.domain.model.response.CreditForMonths;
 import ubunpay.credit.calculator.infrastructure.controller.ISessionManagementController;
+import ubunpay.credit.calculator.infrastructure.persistence.entidad.PreAprobadosEntity;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 @RestController
@@ -37,8 +39,23 @@ public class SessionManagementController implements ISessionManagementController
         return handleSession;
     }
 
-        @GetMapping("/message")
-        public String getMessage () {
-            return "Welcome222 to JavaTechie..!!";
-        }
+    @GetMapping("/message")
+    public String getMessage() {
+        return "Welcome222 to JavaTechie..!!";
     }
+
+    @ApiOperation(
+            value = "getCalculate")
+    @RequestMapping(value = "/getCalculate/{token}", method = RequestMethod.GET)
+    public PreAprobadosEntity getCalculate(@PathVariable("token") String token) {
+        PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
+        try {
+         preAprobadosEntity =  handleSessionManagement.getProductById(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return preAprobadosEntity;
+    }
+
+
+}
