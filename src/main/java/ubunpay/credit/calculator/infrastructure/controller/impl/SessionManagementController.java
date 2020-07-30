@@ -6,12 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
-import ubunpay.credit.calculator.domain.model.response.CreditForMonths;
 import ubunpay.credit.calculator.infrastructure.controller.ISessionManagementController;
-import ubunpay.credit.calculator.infrastructure.persistence.entidad.PreAprobadosEntity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "/ubuntec")

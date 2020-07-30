@@ -13,5 +13,6 @@ public class CreditForMonths {
     private double monthlyFee;
     private double bankGuarantee;
     private double lifeInsurance;
+    private double annualEffectiveRate;
 
 }
