@@ -12,6 +12,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/ubuntec")
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST})
 public class SessionManagementController implements ISessionManagementController {
 
     @Autowired
