@@ -13,5 +13,5 @@ public interface IServiceSessionManagement {
 
     public CreditCalculatorResponse generateToken() throws IOException, ParseException;
 
-    public PreAprobadosEntity getProductById(String token) throws URISyntaxException, JsonProcessingException;
+    public CreditCalculatorResponse getProductById(String token) throws URISyntaxException, IOException;
 }

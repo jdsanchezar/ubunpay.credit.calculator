@@ -12,5 +12,5 @@ public interface ISessionManagementController {
 
     public CreditCalculatorResponse getValueProduct(double valueProduct) throws IOException, ParseException;
 
-    public PreAprobadosEntity getCalculate(@PathVariable("token") String token);
+    public CreditCalculatorResponse getCalculate(@PathVariable("token") String token);
 }

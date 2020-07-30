@@ -11,7 +11,6 @@ import ubunpay.credit.calculator.infrastructure.controller.ISessionManagementCon
 import ubunpay.credit.calculator.infrastructure.persistence.entidad.PreAprobadosEntity;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 @RestController
@@ -30,25 +29,22 @@ public class SessionManagementController implements ISessionManagementController
             handleSession= handleSessionManagement.generateToken();
         } catch (Exception e) {
             e.printStackTrace();
-            CreditForMonths creditForMonths = new CreditForMonths();
-            creditForMonths.setError(e.getMessage());
-            ArrayList<CreditForMonths> array = new ArrayList<>();
-            array.add(creditForMonths);
-            handleSession.setMonths(array);
         }
         return handleSession;
     }
 
     @GetMapping("/message")
     public String getMessage() {
-        return "Welcome222 to JavaTechie..!!";
+        String name = "Heisohn";
+        System.out.println(name.substring(3,5));
+        return "Welcome to JavaTechie..!!";
     }
 
     @ApiOperation(
             value = "getCalculate")
     @RequestMapping(value = "/getCalculate/{token}", method = RequestMethod.GET)
-    public PreAprobadosEntity getCalculate(@PathVariable("token") String token) {
-        PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
+    public CreditCalculatorResponse getCalculate(@PathVariable("token") String token) {
+        CreditCalculatorResponse preAprobadosEntity = new CreditCalculatorResponse();
         try {
          preAprobadosEntity =  handleSessionManagement.getProductById(token);
         } catch (Exception e) {
