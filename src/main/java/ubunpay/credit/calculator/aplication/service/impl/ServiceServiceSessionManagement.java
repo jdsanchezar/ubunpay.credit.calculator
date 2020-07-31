@@ -17,6 +17,8 @@ import ubunpay.credit.calculator.infrastructure.utils.Variables;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceServiceSessionManagement implements IServiceSessionManagement {
@@ -107,6 +109,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 default:
             }
         });
+        cal.setMonths((ArrayList)cal.getMonths().stream().filter(month -> month.getMonthlyFee() <= preAprobadosEntity.getCapacidadPago()).collect(Collectors.toList()));
         return cal;
     }
 
