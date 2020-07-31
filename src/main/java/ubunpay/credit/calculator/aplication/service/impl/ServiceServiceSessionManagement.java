@@ -10,8 +10,10 @@ import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.common.UserModel;
 import ubunpay.credit.calculator.domain.model.request.CreditCalculatorRequest;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
+import ubunpay.credit.calculator.domain.model.response.ErrorResponse;
 import ubunpay.credit.calculator.infrastructure.persistence.entidad.PreAprobadosEntity;
 import ubunpay.credit.calculator.infrastructure.persistence.repositorio.jpa.RepositorioPreAprobadosJPA;
+import ubunpay.credit.calculator.infrastructure.utils.Response;
 import ubunpay.credit.calculator.infrastructure.utils.Variables;
 
 import java.io.*;
@@ -44,15 +46,20 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         ObjectMapper objectMapper = new ObjectMapper();
         calculatorResponse = objectMapper.readValue(dbAsStream, CreditCalculatorResponse.class);
 
-
         PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
         RestTemplate restTemplate = new RestTemplate();
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
         preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getIdAssociated())).orElse(null);
-        tranformacion(calculatorResponse, preAprobadosEntity, userModel,
-                calculadora(userModel.getPrice(), preAprobadosEntity));
+        double valor = calculadora(userModel.getPrice(), preAprobadosEntity);
+        if (valor > preAprobadosEntity.getValidacion()) {
+            ErrorResponse error = new ErrorResponse();
+            error.setError(true);
+            error.setErrorMessage(Response.EXCEDE_CAPACIDAD_PAGO.getValue());
+            calculatorResponse.setResponseError(error);
+        }
+        tranformacion(calculatorResponse, preAprobadosEntity, userModel, valor);
         return calculatorResponse;
     }
 
@@ -61,9 +68,6 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         CreditCalculatorRequest credit = new CreditCalculatorRequest();
         double valor = valorProducto / (Variables.ONE.getValue() - credit.getDiscountFund()) +
                 credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
-        if (valor > preAprobadosEntity.getValidacion()) {
-            System.out.println("Supera monto pre aprobado");
-        }
         return valor;
     }
 
