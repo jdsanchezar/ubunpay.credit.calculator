@@ -51,8 +51,8 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
-        preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getIdAssociated())).orElse(null);
-        double valor = calculadora(userModel.getPrice(), preAprobadosEntity);
+        preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
+        double valor = calculadora(userModel.getTotalValueDiscount(), preAprobadosEntity);
         if (valor > preAprobadosEntity.getValidacion()) {
             ErrorResponse error = new ErrorResponse();
             error.setError(true);
