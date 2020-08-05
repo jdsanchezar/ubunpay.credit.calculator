@@ -20,8 +20,8 @@ public class SessionManagementController implements ISessionManagementController
 
     @ApiOperation(
             value = "getValueProduct")
-    @RequestMapping(value = "/getValueProduct/{valueProduct}", method = RequestMethod.GET)
-    public CreditCalculatorResponse getValueProduct(@PathVariable("valueProduct") double valueProduct) throws IOException, ParseException {
+    @RequestMapping(value = "/getValueProduct/", method = RequestMethod.GET)
+    public CreditCalculatorResponse getValueProduct(@RequestHeader("valueProduct") double valueProduct) throws IOException, ParseException {
         CreditCalculatorResponse handleSession = new CreditCalculatorResponse();
         try {
             handleSession= handleSessionManagement.generateToken();
@@ -40,8 +40,8 @@ public class SessionManagementController implements ISessionManagementController
 
     @ApiOperation(
             value = "getCalculate")
-    @RequestMapping(value = "/getCalculate/{token}", method = RequestMethod.GET)
-    public CreditCalculatorResponse getCalculate(@PathVariable("token") String token) {
+    @RequestMapping(value = "/getCalculate/", method = RequestMethod.GET)
+    public CreditCalculatorResponse getCalculate(@RequestParam("token") String token) {
         CreditCalculatorResponse preAprobadosEntity = new CreditCalculatorResponse();
         try {
          preAprobadosEntity =  handleSessionManagement.getProductById(token);

@@ -48,7 +48,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
 
         PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
         RestTemplate restTemplate = new RestTemplate();
-        final String baseUrl = System.getenv().get("getDtoWithToken") + "/" + token;
+        final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
         preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
