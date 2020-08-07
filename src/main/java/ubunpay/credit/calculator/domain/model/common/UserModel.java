@@ -1,13 +1,18 @@
 package ubunpay.credit.calculator.domain.model.common;
 
+
+import com.ubuntec.security.session.management.domain.model.user.terms.TermsConditions;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.data.annotation.Id;
+
+import java.util.ArrayList;
 
 @Data
 public class UserModel {
 
-	private String orderid;
+
+    @Id
+    private String orderid;
     private Double totalValue;
     private Double totalValueDiscount;
     private String customerId;
@@ -21,9 +26,12 @@ public class UserModel {
     private String correop;
     private String phonep;
     private String channelCode;
-    
+
     private String nameProduct;
     private String agreement;
+    private ArrayList<UserDocument> userDocuments;
+    private CreditInfo creditInfo;
+    private ArrayList<TermsConditions> termsConditions;
 }
 
 

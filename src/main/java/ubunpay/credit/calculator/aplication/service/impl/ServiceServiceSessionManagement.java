@@ -74,15 +74,21 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     private CreditCalculatorResponse tranformacion(CreditCalculatorResponse cal, PreAprobadosEntity preAprobadosEntity,
                                                    UserModel userModel, double valor) {
 
-        double interes =(preAprobadosEntity.getTasa().doubleValue()+ 0.09/100);
+        double interes =(preAprobadosEntity.getTasa().doubleValue());
         double valor1 =  ((1 + interes));
         double valor2 = ((1 + interes));
-        double pago6 = valor  *((( Math.pow(valor1,  6))* interes) / ((Math.pow(valor2, 6)) - 1));
-        double pago12 = valor *((( Math.pow(valor1, 12)) *interes)/ ((Math.pow(valor2, 12)) - 1));
-        double pago18 = valor *((( Math.pow(valor1, 18)) *interes)/ ((Math.pow(valor2, 18)) - 1));
-        double pago24 = valor *((( Math.pow(valor1, 24)) *interes)/ ((Math.pow(valor2, 24)) - 1));
-        double pago30 = valor *((( Math.pow(valor1, 30)) *interes)/ ((Math.pow(valor2, 30)) - 1));
-        double pago36 = valor *((( Math.pow(valor1, 36)) *interes)/ ((Math.pow(valor2, 36)) - 1));
+        double pago6 = (valor  *((( Math.pow(valor1,  6))* interes) / ((Math.pow(valor2, 6)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));
+        double pago12 = (valor  *((( Math.pow(valor1,  12))* interes) / ((Math.pow(valor2, 12)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));;
+        double pago18 = (valor  *((( Math.pow(valor1,  18))* interes) / ((Math.pow(valor2, 18)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));;
+        double pago24 = (valor  *((( Math.pow(valor1,  24))* interes) / ((Math.pow(valor2, 24)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));;
+        double pago30 = (valor  *((( Math.pow(valor1,  30))* interes) / ((Math.pow(valor2, 30)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));;
+        double pago36 = (valor  *((( Math.pow(valor1,  36))* interes) / ((Math.pow(valor2, 36)) - 1)))+
+                (valor*(preAprobadosEntity.getSeguroVidaPor().doubleValue()/100));;
         CreditCalculatorRequest credit = new CreditCalculatorRequest();
         cal.getMonths().forEach(e -> {
             e.setValueToFinance(valor);
