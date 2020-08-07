@@ -1,8 +1,9 @@
 package ubunpay.credit.calculator.domain.model.common;
 
 
-import com.ubuntec.security.session.management.domain.model.user.terms.TermsConditions;
 import lombok.Data;
+import ubunpay.credit.calculator.domain.model.common.terms.TermsConditions;
+
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;

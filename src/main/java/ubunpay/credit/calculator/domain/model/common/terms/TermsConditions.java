@@ -1,4 +1,4 @@
-package com.ubuntec.security.session.management.domain.model.user.terms;
+package ubunpay.credit.calculator.domain.model.common.terms;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
