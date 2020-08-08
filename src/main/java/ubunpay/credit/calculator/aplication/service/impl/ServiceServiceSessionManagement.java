@@ -75,7 +75,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         try {
             TimeUnit.SECONDS.sleep(2);
             RestTemplate restTemplate = new RestTemplate();
-            final String baseUrl = System.getenv().get("get-session-management-addDataToData");
+            final String baseUrl = System.getenv().get("get-session-management-addDataToSession");
             URI uri = new URI(baseUrl);
             ObjectMapper objectMapper = new ObjectMapper();
             restTemplate.postForEntity(uri, loadUserModelWithCalculate(returnUserModel(token), creditCalculatorResponse),
