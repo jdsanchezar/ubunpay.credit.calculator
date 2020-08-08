@@ -15,8 +15,6 @@ public class CreditForMonths {
 	private double lifeInsurance;
 	private double annualEffectiveRate;
 	private double nominalMonthPastDue;
- 
-	public double getValueToTurnToTrade() {
-		return this.valueToFinance - this.bankGuarantee - this.studyCredit;
-	}
+
+
 }
