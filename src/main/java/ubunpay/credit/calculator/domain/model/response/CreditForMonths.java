@@ -2,6 +2,7 @@ package ubunpay.credit.calculator.domain.model.response;
 
 import lombok.Data;
 
+
 @Data
 public class CreditForMonths {
 
@@ -13,6 +14,7 @@ public class CreditForMonths {
 	private double bankGuarantee;
 	private double lifeInsurance;
 	private double annualEffectiveRate;
+	private double nominalMonthPastDue;
  
 	public double getValueToTurnToTrade() {
 		return this.valueToFinance - this.bankGuarantee - this.studyCredit;

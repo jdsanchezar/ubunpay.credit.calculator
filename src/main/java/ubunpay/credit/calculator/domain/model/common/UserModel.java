@@ -6,11 +6,11 @@ import ubunpay.credit.calculator.domain.model.common.terms.TermsConditions;
 
 import org.springframework.data.annotation.Id;
 
+import java.lang.annotation.Documented;
 import java.util.ArrayList;
 
 @Data
 public class UserModel {
-
 
     @Id
     private String orderid;
