@@ -73,9 +73,9 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             URISyntaxException, IOException {
         System.out.println("Inicia doLogAsync: " + System.currentTimeMillis());
         try {
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(2);
             RestTemplate restTemplate = new RestTemplate();
-            final String baseUrl = System.getenv().get("get-session-management-generateToken");
+            final String baseUrl = System.getenv().get("get-session-management-addDataToData");
             URI uri = new URI(baseUrl);
             ObjectMapper objectMapper = new ObjectMapper();
             restTemplate.postForEntity(uri, loadUserModelWithCalculate(returnUserModel(token), creditCalculatorResponse),
