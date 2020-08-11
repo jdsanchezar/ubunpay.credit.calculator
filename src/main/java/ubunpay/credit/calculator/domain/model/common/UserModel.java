@@ -12,7 +12,8 @@ import java.util.ArrayList;
 @Data
 public class UserModel {
 
-    @Id
+	@Id
+    private String sessionId;
     private String orderid;
     private Double totalValue;
     private Double totalValueDiscount;
