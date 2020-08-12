@@ -16,5 +16,4 @@ public class CreditForMonths {
 	private double annualEffectiveRate;
 	private double nominalMonthPastDue;
 
-
 }
