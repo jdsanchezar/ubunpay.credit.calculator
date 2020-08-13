@@ -10,6 +10,5 @@ import java.util.ArrayList;
 public class CreditCalculatorResponse {
 
     private ArrayList<CreditForMonths>  months;
-    
 
 }

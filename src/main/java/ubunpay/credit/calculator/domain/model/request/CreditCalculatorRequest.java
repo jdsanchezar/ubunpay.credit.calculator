@@ -4,10 +4,11 @@ package ubunpay.credit.calculator.domain.model.request;
 import lombok.Data;
 import ubunpay.credit.calculator.infrastructure.utils.Variables;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Data
-public class CreditCalculatorRequest {
+public class CreditCalculatorRequest implements Serializable {
 
     private boolean valueProduct;
     private double requestAmount;

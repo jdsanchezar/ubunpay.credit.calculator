@@ -2,45 +2,45 @@
   "months": [
     {
       "dueTime": 6,
-      "monthlyFee": 6,
-      "otherCosts": 6,
-      "studyCredit": 6,
-      "valueToFinance": 6
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     },
     {
       "dueTime": 12,
-      "monthlyFee": 12,
-      "otherCosts": 12,
-      "studyCredit": 12,
-      "valueToFinance": 12
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     },
     {
       "dueTime": 18,
-      "monthlyFee": 18,
-      "otherCosts": 18,
-      "studyCredit": 18,
-      "valueToFinance": 18
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     },
     {
       "dueTime": 24,
-      "monthlyFee": 24,
-      "otherCosts": 24,
-      "studyCredit": 24,
-      "valueToFinance": 24
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     },
     {
       "dueTime": 30,
-      "monthlyFee": 30,
-      "otherCosts": 30,
-      "studyCredit": 30,
-      "valueToFinance": 30
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     },
     {
       "dueTime": 36,
-      "monthlyFee": 36,
-      "otherCosts": 36,
-      "studyCredit": 36,
-      "valueToFinance": 36
+      "monthlyFee": 0,
+      "otherCosts": 0,
+      "studyCredit": 0,
+      "valueToFinance": 0
     }
   ]
 }
