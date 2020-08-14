@@ -10,7 +10,7 @@ import java.lang.annotation.Documented;
 import java.util.ArrayList;
 
 @Data
-public class UserModel {
+public class UserModelOld {
 
 	@Id
     private String sessionId;
@@ -31,8 +31,8 @@ public class UserModel {
 
     private String nameProduct;
     private String agreement;
-    private ArrayList<UserDocument> userDocuments;
-    private CreditInfo creditInfo;
+    private ArrayList<UserDocumentOld> userDocuments;
+    //private CreditInfo creditInfo;
     private ArrayList<TermsConditions> termsConditions;
 }
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDocument {
+public class UserDocumentOld {
 
     private String partner;
     private String documentName;

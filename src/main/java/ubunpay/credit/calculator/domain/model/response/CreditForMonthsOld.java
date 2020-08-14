@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-public class CreditForMonths {
+public class CreditForMonthsOld {
 
 	private double valueToFinance;
 	private double studyCredit;

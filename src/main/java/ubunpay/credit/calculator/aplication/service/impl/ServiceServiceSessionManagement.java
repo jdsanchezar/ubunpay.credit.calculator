@@ -7,9 +7,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import ubunpay.commons.domain.model.CreditInfo;
+import ubunpay.commons.domain.model.UserModel;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
-import ubunpay.credit.calculator.domain.model.common.CreditInfo;
-import ubunpay.credit.calculator.domain.model.common.UserModel;
 import ubunpay.credit.calculator.domain.model.request.CreditCalculatorRequest;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
 import ubunpay.credit.calculator.domain.model.response.ErrorResponse;
