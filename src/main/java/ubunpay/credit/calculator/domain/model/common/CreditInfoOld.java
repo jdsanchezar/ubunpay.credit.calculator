@@ -14,5 +14,5 @@ public class CreditInfoOld {
 
     private String selectedTerm;
     private double  maxValue;
-    ArrayList<CreditForMonths> months;
+    //ArrayList<CreditForMonths> months;
 }
