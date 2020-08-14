@@ -13,5 +13,6 @@ import java.util.ArrayList;
 public class CreditInfoOld {
 
     private String selectedTerm;
-    ArrayList<CreditForMonthsOld> months;
+    private double  maxValue;
+    ArrayList<CreditForMonths> months;
 }
