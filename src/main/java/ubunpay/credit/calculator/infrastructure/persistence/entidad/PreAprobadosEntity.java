@@ -57,7 +57,7 @@ public class PreAprobadosEntity implements Serializable {
 	private Double nvaCapacidad;
 
 	@Column(nullable = false)
-	private Double validacion;
+	private double validacion;
 
 	@Column(nullable = false, name = "descuento_credito")
 	private Double descuentoCredito;

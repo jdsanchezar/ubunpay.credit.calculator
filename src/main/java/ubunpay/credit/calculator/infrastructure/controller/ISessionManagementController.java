@@ -13,4 +13,7 @@ public interface ISessionManagementController {
     public CreditCalculatorResponse getValueProduct(double valueProduct) throws IOException, ParseException;
 
     public ResponseEntity getCalculate(@PathVariable("token") String token);
+
+    public ResponseEntity getCalculateFromValue(@PathVariable("token") String token,
+                                                @PathVariable("value") Double value);
 }

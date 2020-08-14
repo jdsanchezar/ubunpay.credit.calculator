@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -55,7 +57,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
-        //  userModel.
+
         double valor = 0;
         if (userModel.getCedulap() != null) {
             preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
@@ -69,14 +71,14 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                     System.out.println("<<<<<<<< ------- Valor 0 desde MARKETPLACE: ---------- >>>>>>>>");
                     System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                     valor = preAprobadosEntity.getValidacion();
-                    valor =restarValorDesdeMysql(valor, preAprobadosEntity);
+                    valor = restarValorDesdeMysql(valor, preAprobadosEntity);
                     calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
                 }
             } else {
                 System.out.println("<<<<<<<< ------- Valor Null desde MARKETPLACE: ---------- >>>>>>>>");
                 System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                 valor = preAprobadosEntity.getValidacion();
-                valor =restarValorDesdeMysql(valor, preAprobadosEntity);
+                valor = restarValorDesdeMysql(valor, preAprobadosEntity);
                 calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
             }
             if (valor >= preAprobadosEntity.getValidacion()) {
@@ -112,8 +114,24 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             System.out.println("Error sleep: " + System.currentTimeMillis());
             e.printStackTrace();
         }
-        ;
         System.out.println("Fin doLogAsync: " + System.currentTimeMillis());
+    }
+
+    @Override
+    public ResponseEntity getCalculateFromValue(String token, double value) throws URISyntaxException, IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            final String baseUrl = System.getenv().get("get-session-management-addDataToSession");
+            URI uri = new URI(baseUrl);
+            UserModel userModel = returnUserModel(token);
+            userModel.setTotalValueDiscount(value);
+            restTemplate.postForEntity(uri, userModel,String.class);
+            System.out.println(baseUrl);
+        } catch (Exception e) {
+            System.out.println("Error sleep: " + System.currentTimeMillis());
+            e.printStackTrace();
+        }
+        return new ResponseEntity(restTemplate, HttpStatus.CREATED);
     }
 
 
@@ -154,10 +172,10 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         CreditCalculatorRequest credit = new CreditCalculatorRequest();
         double restar = valorProducto / (Variables.ONE.getValue() - credit.getDiscountFund()) +
                 credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
-        double valor = restar-valorProducto;
-        System.out.println("<<<<<<<< ------- Sobrecargos :  " + valor+ "---------- >>>>>>>>");
-        valor= valorProducto -valor;
-        System.out.println("<<<<<<<< ------- Valor sin sobrecargo :  " + valor+ "---------- >>>>>>>>");
+        double valor = restar - valorProducto;
+        System.out.println("<<<<<<<< ------- Sobrecargos :  " + valor + "---------- >>>>>>>>");
+        valor = valorProducto - valor;
+        System.out.println("<<<<<<<< ------- Valor sin sobrecargo :  " + valor + "---------- >>>>>>>>");
         return valor;
     }
 

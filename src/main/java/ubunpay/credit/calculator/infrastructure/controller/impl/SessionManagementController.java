@@ -57,5 +57,21 @@ public class SessionManagementController implements ISessionManagementController
         }
     }
 
+    @ApiOperation(
+            value = "getCalculateFromValue")
+    @RequestMapping(value = "/getCalculateFromValue/", method = RequestMethod.GET)
+    public ResponseEntity getCalculateFromValue(@RequestParam("token")String token,@RequestParam("value") Double value) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        try {
+            handleSessionManagement.getCalculateFromValue(token, value);
+            errorResponse.setError(false);
+            return new ResponseEntity(HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            errorResponse.setErrorMessage(e.getMessage());
+            errorResponse.setError(true);
+            return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

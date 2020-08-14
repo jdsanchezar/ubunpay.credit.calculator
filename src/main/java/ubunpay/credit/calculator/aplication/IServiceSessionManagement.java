@@ -2,6 +2,7 @@ package ubunpay.credit.calculator.aplication;
 
 
 import org.json.simple.parser.ParseException;
+import org.springframework.http.ResponseEntity;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
 
 import java.io.IOException;
@@ -14,4 +15,6 @@ public interface IServiceSessionManagement {
     public CreditCalculatorResponse getProductById(String token) throws URISyntaxException, IOException;
 
     public void saveInfoCredit(CreditCalculatorResponse creditCalculatorResponse,String token) throws URISyntaxException, IOException;
+
+    public ResponseEntity getCalculateFromValue(String token, double value ) throws URISyntaxException, IOException;
 }
