@@ -48,22 +48,49 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         InputStream dbAsStream = resource.getInputStream();
         ObjectMapper objectMapper = new ObjectMapper();
         calculatorResponse = objectMapper.readValue(dbAsStream, CreditCalculatorResponse.class);
-
+        ErrorResponse error = new ErrorResponse();
         PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
         RestTemplate restTemplate = new RestTemplate();
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
-       if(userModel.getCedulap()!=null) {
-           preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
-        double valor = calculadora(userModel.getTotalValueDiscount(), preAprobadosEntity);
-        if (valor > preAprobadosEntity.getValidacion()) {
-            ErrorResponse error = new ErrorResponse();
-            error.setError(true);
-            error.setErrorMessage(Response.EXCEDE_CAPACIDAD_PAGO.getValue());
+        //  userModel.
+        double valor = 0;
+        if (userModel.getCedulap() != null) {
+            preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
+            if (userModel.getTotalValueDiscount() != null) {
+                if (userModel.getTotalValueDiscount() > 0) {
+                    valor = calculadora(userModel.getTotalValueDiscount(), preAprobadosEntity);
+                    Double valueWithDiscount = preAprobadosEntity.getValidacion() - preAprobadosEntity.getDescuentoCredito();
+                    System.out.println(valueWithDiscount);
+                } else {
+                    System.out.println("Aqui se calculara el valor del prestamo predefinido si viene en 0");
+                    System.out.println("<<<<<<<< ------- Valor 0 desde MARKETPLACE: ---------- >>>>>>>>");
+                    System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
+                    valor = preAprobadosEntity.getValidacion();
+                    valor =restarValorDesdeMysql(valor, preAprobadosEntity);
+                    calculatorResponse.setMaxValue(valor);
+                }
+            } else {
+                System.out.println("<<<<<<<< ------- Valor Null desde MARKETPLACE: ---------- >>>>>>>>");
+                System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
+                valor = preAprobadosEntity.getValidacion();
+                valor =restarValorDesdeMysql(valor, preAprobadosEntity);
+                calculatorResponse.setMaxValue(valor);
+            }
+            if (valor >= preAprobadosEntity.getValidacion()) {
+                error.setError(true);
+                error.setErrorMessage(Response.EXCEDE_CAPACIDAD_PAGO.getValue());
+            } else {
+                if (valor != 0) {
+                    tranformacion(calculatorResponse, preAprobadosEntity, userModel, valor, error);
+                }
+            }
         }
-        tranformacion(calculatorResponse, preAprobadosEntity, userModel, valor);
-       }
+        calculatorResponse.setErrorResponse(error);
+        if (calculatorResponse.getErrorResponse().isError()) {
+            calculatorResponse.setMonths(new ArrayList<>());
+        }
         return calculatorResponse;
     }
 
@@ -100,11 +127,11 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
 
     private UserModel loadUserModelWithCalculate(UserModel userModel,
                                                  CreditCalculatorResponse creditCalculatorResponse) {
-        if(userModel.getCreditInfo()!=null){
+        if (userModel.getCreditInfo() != null) {
             CreditInfo cre = userModel.getCreditInfo();
             cre.setMonths(creditCalculatorResponse.getMonths());
             userModel.setCreditInfo(cre);
-        }else{
+        } else {
             CreditInfo cre = new CreditInfo();
             cre.setMonths(creditCalculatorResponse.getMonths());
             userModel.setCreditInfo(cre);
@@ -120,8 +147,20 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         return valor;
     }
 
+    private double restarValorDesdeMysql(Double valorProducto, PreAprobadosEntity preAprobadosEntity) {
+        System.out.println("<<<<<<<< ------- Calculando el valor menos los sobrecargos predefinidos: ---------- >>>>>>>>");
+        CreditCalculatorRequest credit = new CreditCalculatorRequest();
+        double restar = valorProducto / (Variables.ONE.getValue() - credit.getDiscountFund()) +
+                credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
+        double valor = restar-valorProducto;
+        System.out.println("<<<<<<<< ------- Sobrecargos :  " + valor+ "---------- >>>>>>>>");
+        valor= valorProducto -valor;
+        System.out.println("<<<<<<<< ------- Valor sin sobrecargo :  " + valor+ "---------- >>>>>>>>");
+        return valor;
+    }
+
     private CreditCalculatorResponse tranformacion(CreditCalculatorResponse cal, PreAprobadosEntity preAprobadosEntity,
-                                                   UserModel userModel, double valor) {
+                                                   UserModel userModel, double valor, ErrorResponse error) {
 
         double interes = (preAprobadosEntity.getTasa().doubleValue());
         double valor1 = ((1 + interes));
@@ -175,6 +214,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             }
         });
         cal.setMonths((ArrayList) cal.getMonths().stream().filter(month -> month.getMonthlyFee() <= preAprobadosEntity.getCapacidadPago()).collect(Collectors.toList()));
+        error.setError(false);
         return cal;
     }
 

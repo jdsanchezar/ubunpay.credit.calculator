@@ -9,6 +9,8 @@ import java.util.ArrayList;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreditCalculatorResponse {
 
+    private ErrorResponse errorResponse;
     private ArrayList<CreditForMonths>  months;
+    private double  maxValue;
 
 }
