@@ -69,14 +69,14 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                     System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                     valor = preAprobadosEntity.getValidacion();
                     valor =restarValorDesdeMysql(valor, preAprobadosEntity);
-                    calculatorResponse.setMaxValue(valor);
+                    calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
                 }
             } else {
                 System.out.println("<<<<<<<< ------- Valor Null desde MARKETPLACE: ---------- >>>>>>>>");
                 System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                 valor = preAprobadosEntity.getValidacion();
                 valor =restarValorDesdeMysql(valor, preAprobadosEntity);
-                calculatorResponse.setMaxValue(valor);
+                calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
             }
             if (valor >= preAprobadosEntity.getValidacion()) {
                 error.setError(true);
@@ -131,6 +131,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             CreditInfo cre = userModel.getCreditInfo();
             cre.setMonths(creditCalculatorResponse.getMonths());
             userModel.setCreditInfo(cre);
+            userModel.getCreditInfo().setMaxValue(creditCalculatorResponse.getMaxValue());
         } else {
             CreditInfo cre = new CreditInfo();
             cre.setMonths(creditCalculatorResponse.getMonths());
