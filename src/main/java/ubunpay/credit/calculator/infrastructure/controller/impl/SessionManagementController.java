@@ -64,8 +64,8 @@ public class SessionManagementController implements ISessionManagementController
         ErrorResponse errorResponse = new ErrorResponse();
         try {
             handleSessionManagement.getCalculateFromValue(token, value);
-            errorResponse.setError(false);
-            return new ResponseEntity(HttpStatus.ACCEPTED);
+            //errorResponse.setError(false);
+            return getCalculate(token);
         } catch (Exception e) {
             errorResponse.setErrorMessage(e.getMessage());
             errorResponse.setError(true);
