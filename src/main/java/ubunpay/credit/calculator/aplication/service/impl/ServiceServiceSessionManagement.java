@@ -47,7 +47,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
 
 
     private ArrayList<CreditForMonths> calculateCreditFee(double valorSolicitado, double tasaInteres,
-                                                          double porcentajeSeguroVida, double paymentCapacity ) {
+                                                          double porcentajeSeguroVida, double paymentCapacity, double amountToBePaid) {
         CreditForMonths creditForMonths;
         ArrayList<CreditForMonths> arrayCreditForMonths = new ArrayList<>();
         double valor1 = ((1 + tasaInteres));
@@ -65,6 +65,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             creditForMonths.setLifeInsurance(porcentajeSeguroVida);
             creditForMonths.setOtherCosts(tasaInteres * valorSolicitado + porcentajeSeguroVida);
             creditForMonths.setNominalMonthPastDue(tasaInteres * 100);
+            creditForMonths.setAmountToBePaid(amountToBePaid);
             if(pago<=paymentCapacity){
                 arrayCreditForMonths.add(creditForMonths);
             }
@@ -98,7 +99,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 requestedAmount = creditLimit;
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
-                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue));
                 
             } else {
             	
@@ -106,7 +107,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 requestedAmount = userModel.getTotalValueDiscount();
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_COMPRA_PRODUCTOS.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(creditValue, preAprobadosEntity.getTasa().doubleValue(),
-                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), requestedAmount));
                 
             }
             
@@ -199,7 +200,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             requestedAmount = value;
             creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
             calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
-                    preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                    preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue));
                             
             
             calculatorResponse.setMaxValue(creditLimit);

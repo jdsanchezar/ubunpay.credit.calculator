@@ -67,4 +67,7 @@ public class PreAprobadosEntity implements Serializable {
 
 	@Column(nullable = false)
 	private String pagare;
+	
+	@Column(name = "cuenta")
+	private String bankAccount;
 }
