@@ -62,10 +62,11 @@ public class SessionManagementController implements ISessionManagementController
     @RequestMapping(value = "/getCalculateFromValue/", method = RequestMethod.GET)
     public ResponseEntity getCalculateFromValue(@RequestParam("token")String token,@RequestParam("value") Double value) {
         ErrorResponse errorResponse = new ErrorResponse();
-        try {
-            handleSessionManagement.getCalculateFromValue(token, value);
-            //errorResponse.setError(false);
-            return getCalculate(token);
+        try {            
+            CreditCalculatorResponse creditCalculatorResponse = handleSessionManagement.getCalculateValuesForCredit(token, value);
+            handleSessionManagement.saveInfoCredit(creditCalculatorResponse,token);
+            return new ResponseEntity(creditCalculatorResponse, HttpStatus.ACCEPTED);
+            
         } catch (Exception e) {
             errorResponse.setErrorMessage(e.getMessage());
             errorResponse.setError(true);

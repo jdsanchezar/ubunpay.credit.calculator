@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -76,6 +75,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     }
 
     public CreditCalculatorResponse calculateCreditProduct(String token) throws URISyntaxException, JsonProcessingException {
+    	
         CreditCalculatorResponse calculatorResponse = new CreditCalculatorResponse();
         ErrorResponse error = new ErrorResponse();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -84,26 +84,35 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
         URI uri = new URI(baseUrl);
         UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
+        
         if (userModel.getCedulap() != null) {
+        	
             preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
             double creditLimit;
             double creditValue;
             double requestedAmount;
+            
             if (userModel.getTotalValueDiscount() == null || userModel.getTotalValueDiscount() <= 0) {
+            	
                 creditLimit = getCreditLimit(preAprobadosEntity.getId().toString(), preAprobadosEntity.getValidacion());
                 requestedAmount = creditLimit;
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
                         preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                
             } else {
+            	
                 creditLimit = getCreditLimit(preAprobadosEntity.getId().toString(), preAprobadosEntity.getValidacion());
                 requestedAmount = userModel.getTotalValueDiscount();
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_COMPRA_PRODUCTOS.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(creditValue, preAprobadosEntity.getTasa().doubleValue(),
                         preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                
             }
+            
             calculatorResponse.setMaxValue(creditLimit);
             calculatorResponse.setRequestedAmount(requestedAmount);
+            
             if (requestedAmount > creditLimit || creditValue > creditLimit ) {
                 error.setError(true);
                 error.setErrorMessage(Response.EXCEDE_CUPO.getValue());
@@ -111,12 +120,16 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 error.setError(true);
                 error.setErrorMessage(Response.EXCEDE_CAPACIDAD_PAGO.getValue());
             }
+            
         }
+        
         calculatorResponse.setErrorResponse(error);
+        
         if (calculatorResponse.getErrorResponse().isError()) {
             calculatorResponse.setMonths(new ArrayList<>());
         }
-         return calculatorResponse;
+        
+        return calculatorResponse;
     }
 
     private double getCreditLimit(String customerIdentificaction, double creditLimit) {
@@ -164,20 +177,50 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     }
 
     @Override
-    public ResponseEntity getCalculateFromValue(String token, double value) throws URISyntaxException, IOException {
+    public CreditCalculatorResponse getCalculateValuesForCredit(String token, double value) throws URISyntaxException, IOException {
+    	
+       	CreditCalculatorResponse calculatorResponse = new CreditCalculatorResponse();
+        ErrorResponse error = new ErrorResponse();
+        ObjectMapper objectMapper = new ObjectMapper();
+        PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
         RestTemplate restTemplate = new RestTemplate();
-        try {
-            final String baseUrl = System.getenv().get("get-session-management-addDataToSession");
-            URI uri = new URI(baseUrl);
-            UserModel userModel = returnUserModel(token);
-            userModel.setTotalValueDiscount(value);
-            restTemplate.postForEntity(uri, userModel, String.class);
-            System.out.println(baseUrl);
-        } catch (Exception e) {
-            System.out.println("Error sleep: " + System.currentTimeMillis());
-            e.printStackTrace();
+        final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
+        URI uri = new URI(baseUrl);
+        UserModel userModel = objectMapper.readValue(restTemplate.getForObject(uri, String.class), UserModel.class);
+        
+        if (userModel.getCedulap() != null) {
+        	
+            preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
+            double creditLimit;
+            double creditValue;
+            double requestedAmount;
+            	
+            creditLimit = getCreditLimit(preAprobadosEntity.getId().toString(), preAprobadosEntity.getValidacion());
+            requestedAmount = value;
+            creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
+            calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
+                    preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago()));
+                            
+            
+            calculatorResponse.setMaxValue(creditLimit);
+            calculatorResponse.setRequestedAmount(requestedAmount);
+            
+            if (requestedAmount > creditLimit || creditValue > creditLimit ) {
+                error.setError(true);
+                error.setErrorMessage(Response.EXCEDE_CUPO.getValue());
+            }else if(calculatorResponse.getMonths().size()<=0){
+                error.setError(true);
+                error.setErrorMessage(Response.EXCEDE_CAPACIDAD_PAGO.getValue());
+            }
+        }        
+        
+        calculatorResponse.setErrorResponse(error);
+        
+        if (calculatorResponse.getErrorResponse().isError()) {
+            calculatorResponse.setMonths(new ArrayList<>());
         }
-        return new ResponseEntity(restTemplate, HttpStatus.CREATED);
+        
+        return calculatorResponse;
     }
 
 
@@ -197,7 +240,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             cre.setMonths(creditCalculatorResponse.getMonths());
             userModel.setCreditInfo(cre);
             userModel.getCreditInfo().setMaxValue(creditCalculatorResponse.getMaxValue());
-            userModel.getCreditInfo().setMaxValue(creditCalculatorResponse.getMaxValue());
+            userModel.getCreditInfo().setRequestedAmount(creditCalculatorResponse.getRequestedAmount());
         } else {
             CreditInfo cre = new CreditInfo();
             cre.setMonths(creditCalculatorResponse.getMonths());
