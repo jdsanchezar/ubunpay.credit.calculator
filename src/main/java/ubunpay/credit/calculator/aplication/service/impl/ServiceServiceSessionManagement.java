@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import ubunpay.commons.domain.model.CreditForMonths;
 import ubunpay.commons.domain.model.CreditInfo;
 import ubunpay.commons.domain.model.UserModel;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
@@ -19,6 +20,7 @@ import ubunpay.credit.calculator.domain.model.response.ErrorResponse;
 import ubunpay.credit.calculator.infrastructure.persistence.entidad.PreAprobadosEntity;
 import ubunpay.credit.calculator.infrastructure.persistence.repositorio.jpa.RepositorioPreAprobadosJPA;
 import ubunpay.credit.calculator.infrastructure.utils.Response;
+import ubunpay.credit.calculator.infrastructure.utils.TipoCredito;
 import ubunpay.credit.calculator.infrastructure.utils.Variables;
 
 import java.io.*;
@@ -44,14 +46,55 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     }
 
 
+    private ArrayList<CreditForMonths> calculateCreditFee(double valorSolicitado, double tasaInteres,
+                                                          double porcentajeSeguroVida) {
+        CreditForMonths creditForMonths;
+        ArrayList<CreditForMonths> arrayCreditForMonths = new ArrayList<>();
+        double valor1 = ((1 + tasaInteres));
+        double pago;
+        for (int i = 6; i <= 36; i += 6) {
+            creditForMonths = new CreditForMonths();
+            pago = (valorSolicitado * (((Math.pow(valor1, i)) * tasaInteres) / ((Math.pow(valor1, i)) - 1))) +
+                    (valorSolicitado * (porcentajeSeguroVida));
+            creditForMonths.setMonthlyFee(pago);
+            creditForMonths.setValueToFinance(valorSolicitado);
+            creditForMonths.setStudyCredit(Variables.VALUE_STUDY_CREDIT.getValue());
+            creditForMonths.setAnnualEffectiveRate(((Math.pow((1 + tasaInteres), 12)) - 1) * 100);
+            creditForMonths.setBankGuarantee(valorSolicitado * Variables.VALUE_DISCOUNT_FUND.getValue());
+            creditForMonths.setLifeInsurance(porcentajeSeguroVida);
+            creditForMonths.setOtherCosts(tasaInteres * valorSolicitado + porcentajeSeguroVida);
+            creditForMonths.setNominalMonthPastDue(tasaInteres * 100);
+            arrayCreditForMonths.add(creditForMonths);
+        }
+        return arrayCreditForMonths;
+
+    }
+
+    private double calculateCreditValue(double valorSolicitado, String tipoCredito) {
+        CreditCalculatorRequest credit = new CreditCalculatorRequest();
+        double valor = (valorSolicitado * (Variables.ONE.getValue() - credit.getDiscountFund())) -
+                credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
+
+        switch (tipoCredito) {
+            case "compra productos":
+                valor = (valorSolicitado / (Variables.ONE.getValue() - credit.getDiscountFund())) +
+                        credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
+                break;
+            case "libre inversion":
+                valor = valor;
+                break;
+            default:
+                valor = valor;
+                break;
+        }
+        return valor;
+    }
+
+
     @Override
     public CreditCalculatorResponse getProductById(String token) throws URISyntaxException, IOException {
-        CreditCalculatorResponse calculatorResponse = new CreditCalculatorResponse();
-        Resource resource = resourceLoader.getResource("classpath:response.json");
-        InputStream dbAsStream = resource.getInputStream();
-        ObjectMapper objectMapper = new ObjectMapper();
-        calculatorResponse = objectMapper.readValue(dbAsStream, CreditCalculatorResponse.class);
         ErrorResponse error = new ErrorResponse();
+        ObjectMapper objectMapper = new ObjectMapper();
         PreAprobadosEntity preAprobadosEntity = new PreAprobadosEntity();
         RestTemplate restTemplate = new RestTemplate();
         final String baseUrl = System.getenv().get("getDtoWithToken") + "/?token=" + token;
@@ -63,7 +106,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             preAprobadosEntity = repository.findById(Integer.valueOf(userModel.getCedulap())).orElse(null);
             if (userModel.getTotalValueDiscount() != null) {
                 if (userModel.getTotalValueDiscount() > 0) {
-                    valor = calculadora(userModel.getTotalValueDiscount(), preAprobadosEntity);
+                    valor = calcularValorCredito(userModel.getTotalValueDiscount(), preAprobadosEntity);
                     Double valueWithDiscount = preAprobadosEntity.getValidacion() - preAprobadosEntity.getDescuentoCredito();
                     System.out.println(valueWithDiscount);
                 } else {
@@ -71,14 +114,14 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                     System.out.println("<<<<<<<< ------- Valor 0 desde MARKETPLACE: ---------- >>>>>>>>");
                     System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                     valor = preAprobadosEntity.getValidacion();
-                    valor = restarValorDesdeMysql(valor, preAprobadosEntity);
+                    valor = calcularValorCreditoLibreInversion(valor, preAprobadosEntity);
                     calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
                 }
             } else {
                 System.out.println("<<<<<<<< ------- Valor Null desde MARKETPLACE: ---------- >>>>>>>>");
                 System.out.println("<<<<<<<< ------- Valor obtenido desde MYSQL: " + preAprobadosEntity.getValidacion() + "---------- >>>>>>>>");
                 valor = preAprobadosEntity.getValidacion();
-                valor = restarValorDesdeMysql(valor, preAprobadosEntity);
+                valor = calcularValorCreditoLibreInversion(valor, preAprobadosEntity);
                 calculatorResponse.setMaxValue(preAprobadosEntity.getValidacion());
             }
             if (valor >= preAprobadosEntity.getValidacion()) {
@@ -125,7 +168,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             URI uri = new URI(baseUrl);
             UserModel userModel = returnUserModel(token);
             userModel.setTotalValueDiscount(value);
-            restTemplate.postForEntity(uri, userModel,String.class);
+            restTemplate.postForEntity(uri, userModel, String.class);
             System.out.println(baseUrl);
         } catch (Exception e) {
             System.out.println("Error sleep: " + System.currentTimeMillis());
@@ -160,14 +203,14 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         return userModel;
     }
 
-    private double calculadora(Double valorProducto, PreAprobadosEntity preAprobadosEntity) {
+    private double calcularValorCredito(Double valorProducto, PreAprobadosEntity preAprobadosEntity) {
         CreditCalculatorRequest credit = new CreditCalculatorRequest();
         double valor = valorProducto / (Variables.ONE.getValue() - credit.getDiscountFund()) +
                 credit.getValueStudyCredit() + Variables.VALUE_INCOGNITO.getValue();
         return valor;
     }
 
-    private double restarValorDesdeMysql(Double valorProducto, PreAprobadosEntity preAprobadosEntity) {
+    private double calcularValorCreditoLibreInversion(Double valorProducto, PreAprobadosEntity preAprobadosEntity) {
         System.out.println("<<<<<<<< ------- Calculando el valor menos los sobrecargos predefinidos: ---------- >>>>>>>>");
         CreditCalculatorRequest credit = new CreditCalculatorRequest();
         double restar = valorProducto / (Variables.ONE.getValue() - credit.getDiscountFund()) +

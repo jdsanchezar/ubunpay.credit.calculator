@@ -72,6 +72,4 @@ public class SessionManagementController implements ISessionManagementController
             return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }
