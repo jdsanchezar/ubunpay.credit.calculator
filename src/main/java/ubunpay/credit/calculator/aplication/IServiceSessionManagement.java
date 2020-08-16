@@ -12,7 +12,7 @@ public interface IServiceSessionManagement {
 
     public CreditCalculatorResponse generateToken() throws IOException, ParseException;
 
-    public CreditCalculatorResponse getProductById(String token) throws URISyntaxException, IOException;
+    public CreditCalculatorResponse calculateCreditProduct(String token) throws URISyntaxException, IOException;
 
     public void saveInfoCredit(CreditCalculatorResponse creditCalculatorResponse,String token) throws URISyntaxException, IOException;
 

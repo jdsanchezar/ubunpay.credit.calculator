@@ -2,7 +2,8 @@ package ubunpay.credit.calculator.infrastructure.utils;
 
 public enum Response {
 
-    EXCEDE_CAPACIDAD_PAGO("Excede capacidad de pago");
+    EXCEDE_CAPACIDAD_PAGO("Excede capacidad de pago"),
+    EXCEDE_CUPO("Excede cupo maximo");
 
     private String value;
 

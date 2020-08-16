@@ -13,5 +13,6 @@ public class CreditCalculatorResponse {
     private ErrorResponse errorResponse;
     private ArrayList<CreditForMonths>  months;
     private double  maxValue;
+    private double  requestedAmount;
 
 }
