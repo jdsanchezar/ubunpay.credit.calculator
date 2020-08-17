@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import ubunpay.commons.domain.model.CreditForMonths;
 import ubunpay.commons.domain.model.CreditInfo;
+import ubunpay.commons.domain.model.Customer;
 import ubunpay.commons.domain.model.UserModel;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.request.CreditCalculatorRequest;
@@ -28,7 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ServiceServiceSessionManagement implements IServiceSessionManagement {
@@ -69,7 +69,6 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             if(pago<=paymentCapacity){
                 arrayCreditForMonths.add(creditForMonths);
             }
-
         }
         return arrayCreditForMonths;
 
@@ -133,7 +132,22 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
         return calculatorResponse;
     }
 
-    private double getCreditLimit(String customerIdentificaction, double creditLimit) {
+    private double getCreditLimit(String customerIdentificaction, double creditLimit  ) throws URISyntaxException, JsonProcessingException {
+        AtomicReference<Double> accumulatedCreditAmount = new AtomicReference<>((double) 0);
+        RestTemplate restTemplate = new RestTemplate();
+        final String baseUrl = System.getenv().get("get-session-management-retrieveCustomerById") + "/?id=" +
+                customerIdentificaction;
+        URI uri = new URI(baseUrl);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Customer customer = objectMapper.readValue(restTemplate.getForObject(uri, String.class), Customer.class);
+        if( customer.getTransationsSuccesfulls()!=null) {
+            customer.getTransationsSuccesfulls().forEach(transationsSuccesfull -> {
+                transationsSuccesfull.getTransationsSuccefulls().forEach(creditForMonths -> {
+                    accumulatedCreditAmount.updateAndGet(v -> new Double((double) (v + creditForMonths.getValueToFinance())));
+                });
+            });
+        }
+        creditLimit = creditLimit - accumulatedCreditAmount.get();
         return creditLimit;
     }
 
@@ -166,7 +180,6 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             RestTemplate restTemplate = new RestTemplate();
             final String baseUrl = System.getenv().get("get-session-management-addDataToSession");
             URI uri = new URI(baseUrl);
-            ObjectMapper objectMapper = new ObjectMapper();
             restTemplate.postForEntity(uri, loadUserModelWithCalculate(returnUserModel(token), creditCalculatorResponse),
                     String.class);
             System.out.println(baseUrl);
