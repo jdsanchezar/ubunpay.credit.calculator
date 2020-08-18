@@ -47,7 +47,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
 
 
     private ArrayList<CreditForMonths> calculateCreditFee(double valorSolicitado, double tasaInteres,
-                                                          double porcentajeSeguroVida, double paymentCapacity, double amountToBePaid) {
+                                                          double porcentajeSeguroVida, double paymentCapacity, double amountToBePaid, String bankAccount) {
         CreditForMonths creditForMonths;
         ArrayList<CreditForMonths> arrayCreditForMonths = new ArrayList<>();
         double valor1 = ((1 + tasaInteres));
@@ -66,6 +66,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             creditForMonths.setOtherCosts(tasaInteres * valorSolicitado + porcentajeSeguroVida);
             creditForMonths.setNominalMonthPastDue(tasaInteres * 100);
             creditForMonths.setAmountToBePaid(amountToBePaid);
+            creditForMonths.setBankAccount(bankAccount);
             if(pago<=paymentCapacity){
                 arrayCreditForMonths.add(creditForMonths);
             }
@@ -99,7 +100,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 requestedAmount = creditLimit;
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
-                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue));
+                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue, preAprobadosEntity.getBankAccount()));
                 
             } else {
             	
@@ -107,7 +108,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
                 requestedAmount = userModel.getTotalValueDiscount();
                 creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_COMPRA_PRODUCTOS.getValue());
                 calculatorResponse.setMonths(calculateCreditFee(creditValue, preAprobadosEntity.getTasa().doubleValue(),
-                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), requestedAmount));
+                        preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), requestedAmount, preAprobadosEntity.getBankAccount()));
                 
             }
             
@@ -200,7 +201,7 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             requestedAmount = value;
             creditValue = calculateCreditValue(requestedAmount, TipoCredito.VALUE_LIBRE_INVERSION.getValue());
             calculatorResponse.setMonths(calculateCreditFee(requestedAmount, preAprobadosEntity.getTasa().doubleValue(),
-                    preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue));
+                    preAprobadosEntity.getSeguroVidaPor().doubleValue(), preAprobadosEntity.getCapacidadPago(), creditValue,preAprobadosEntity.getBankAccount()));
                             
             
             calculatorResponse.setMaxValue(creditLimit);
