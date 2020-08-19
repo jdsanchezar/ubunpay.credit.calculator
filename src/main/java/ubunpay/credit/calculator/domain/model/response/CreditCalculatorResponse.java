@@ -14,5 +14,6 @@ public class CreditCalculatorResponse {
     private ArrayList<CreditForMonths>  months;
     private double  maxValue;
     private double  requestedAmount;
+    private String  bankAccount;
 
 }

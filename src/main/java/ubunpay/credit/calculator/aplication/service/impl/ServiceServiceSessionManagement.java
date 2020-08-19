@@ -93,6 +93,8 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             double creditValue;
             double requestedAmount;
             
+            calculatorResponse.setBankAccount(preAprobadosEntity.getBankAccount());
+            
             if (userModel.getTotalValueDiscount() == null || userModel.getTotalValueDiscount() <= 0) {
             	
                 creditLimit = getCreditLimit(preAprobadosEntity.getId().toString(), preAprobadosEntity.getValidacion());
@@ -250,20 +252,18 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
 
     private UserModel loadUserModelWithCalculate(UserModel userModel,
                                                  CreditCalculatorResponse creditCalculatorResponse) {
-        if (userModel.getCreditInfo() != null) {
-            CreditInfo cre = userModel.getCreditInfo();
-            cre.setMonths(creditCalculatorResponse.getMonths());
-            userModel.setCreditInfo(cre);
-            userModel.getCreditInfo().setMaxValue(creditCalculatorResponse.getMaxValue());
-            userModel.getCreditInfo().setRequestedAmount(creditCalculatorResponse.getRequestedAmount());
-        } else {
-            CreditInfo cre = new CreditInfo();
-            cre.setMonths(creditCalculatorResponse.getMonths());
-            userModel.setCreditInfo(cre);
-            userModel.getCreditInfo().setMaxValue(creditCalculatorResponse.getMaxValue());
-            userModel.getCreditInfo().setRequestedAmount(creditCalculatorResponse.getRequestedAmount());
-        }
-
+    	CreditInfo cre = new CreditInfo();
+    	if (userModel.getCreditInfo()!=null) {
+    		cre=userModel.getCreditInfo();
+    	}
+    	System.out.println("creditCalculatorResponse.getBankAccount(): " + creditCalculatorResponse.getBankAccount());
+    	cre.setMonths(creditCalculatorResponse.getMonths());
+    	cre.setSelectedTerm(creditCalculatorResponse.getBankAccount());;
+    	cre.setMaxValue(creditCalculatorResponse.getMaxValue());
+    	cre.setRequestedAmount(creditCalculatorResponse.getRequestedAmount());
+    	cre.setBankAccount(creditCalculatorResponse.getBankAccount());
+        userModel.setCreditInfo(cre);
+        
         return userModel;
     }
 }

@@ -47,6 +47,7 @@ public class SessionManagementController implements ISessionManagementController
     public ResponseEntity getCalculate(@RequestParam("token") String token) {
         CreditCalculatorResponse creditCalculatorResponse = new CreditCalculatorResponse();
         try {
+        	//Hacer llamado unico al get token
             creditCalculatorResponse = handleSessionManagement.calculateCreditProduct(token);
             handleSessionManagement.saveInfoCredit(creditCalculatorResponse,token);
             return new ResponseEntity(creditCalculatorResponse, HttpStatus.ACCEPTED);

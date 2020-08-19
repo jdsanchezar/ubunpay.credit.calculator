@@ -8,10 +8,10 @@
         <version>2.3.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ubunpay.credit</groupId>
-    <artifactId>calculator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>ubunpay.credit.calculator</name>
+    <groupId>com.ubunpay</groupId>
+    <artifactId>credit.calculator</artifactId>
+    <version>1.0</version>
+    <name>com.ubunpay.credit.calculator</name>
     <description>ubunpay.credit.calculator</description>
 
     <properties>
@@ -87,7 +87,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>ubunpay-calculator</finalName>
+        <finalName>com.ubunpay.credit.calculator</finalName>
     </build>
 
 </project>
