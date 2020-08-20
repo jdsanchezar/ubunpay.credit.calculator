@@ -258,7 +258,6 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     	}
     	System.out.println("creditCalculatorResponse.getBankAccount(): " + creditCalculatorResponse.getBankAccount());
     	cre.setMonths(creditCalculatorResponse.getMonths());
-    	cre.setSelectedTerm(creditCalculatorResponse.getBankAccount());;
     	cre.setMaxValue(creditCalculatorResponse.getMaxValue());
     	cre.setRequestedAmount(creditCalculatorResponse.getRequestedAmount());
     	cre.setBankAccount(creditCalculatorResponse.getBankAccount());
