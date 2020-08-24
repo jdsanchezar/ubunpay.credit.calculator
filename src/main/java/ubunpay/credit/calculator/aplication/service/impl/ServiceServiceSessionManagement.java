@@ -211,6 +211,8 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             double creditLimit;
             double creditValue;
             double requestedAmount;
+            
+            calculatorResponse.setBankAccount(preAprobadosEntity.getBankAccount());
             	
             creditLimit = getCreditLimit(preAprobadosEntity.getId().toString(), preAprobadosEntity.getValidacion());
             requestedAmount = value;
