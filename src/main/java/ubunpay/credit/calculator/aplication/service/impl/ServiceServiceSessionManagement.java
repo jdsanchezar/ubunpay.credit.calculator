@@ -13,6 +13,9 @@ import ubunpay.commons.domain.model.CreditForMonths;
 import ubunpay.commons.domain.model.CreditInfo;
 import ubunpay.commons.domain.model.Customer;
 import ubunpay.commons.domain.model.UserModel;
+import ubunpay.commons.zoho.application.service.IZohoIntegrationService;
+import ubunpay.commons.zoho.domain.model.ResultRecordZoho;
+import ubunpay.commons.zoho.integration.infrastructure.utils.ZohoPhasesEnum;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.request.CreditCalculatorRequest;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
@@ -37,6 +40,8 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
     ResourceLoader resourceLoader;
     @Autowired
     private RepositorioPreAprobadosJPA repository;
+    @Autowired
+    IZohoIntegrationService zohoIntegrationService;
 
     public CreditCalculatorResponse generateToken() throws IOException {
         Resource resource = resourceLoader.getResource("classpath:response.json");
@@ -179,12 +184,21 @@ public class ServiceServiceSessionManagement implements IServiceSessionManagemen
             URISyntaxException, IOException {
         System.out.println("Inicia doLogAsync: " + System.currentTimeMillis());
         try {
+        	UserModel userModel = null;
             TimeUnit.SECONDS.sleep(2);
             RestTemplate restTemplate = new RestTemplate();
             final String baseUrl = System.getenv().get("get-session-management-addDataToSession");
             URI uri = new URI(baseUrl);
-            restTemplate.postForEntity(uri, loadUserModelWithCalculate(returnUserModel(token), creditCalculatorResponse),
-                    String.class);
+            userModel = returnUserModel(token);
+            userModel = loadUserModelWithCalculate(userModel, creditCalculatorResponse);
+            // Se realiza la actualización del Deal - 07/09/2020 - JESUS SANCHEZ
+            if(userModel != null && userModel.getIdDeal() != null) {
+            	ResultRecordZoho result = zohoIntegrationService.updateDealZoho(userModel, ZohoPhasesEnum.SIMULACION_CREDITO.getValue(),  null);
+            } else {
+            	ResultRecordZoho result = zohoIntegrationService.createDealZoho(userModel, ZohoPhasesEnum.SIMULACION_CREDITO.getValue());
+            }
+            
+            restTemplate.postForEntity(uri, userModel,String.class);
             System.out.println(baseUrl);
         } catch (InterruptedException e) {
             System.out.println("Error sleep: " + System.currentTimeMillis());

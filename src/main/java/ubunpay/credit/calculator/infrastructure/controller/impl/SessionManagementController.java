@@ -38,7 +38,7 @@ public class SessionManagementController implements ISessionManagementController
     public String getMessage() {
         String name = "Heisohn";
         System.out.println(name.substring(3, 5));
-        return "Welcome to JavaTechie..!!";
+        return "V20200824_01";
     }
 
     @ApiOperation(
