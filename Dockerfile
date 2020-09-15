@@ -1,4 +1,5 @@
 FROM openjdk:latest
 EXPOSE 8082
-ADD target/ubunpay-calculator.jar ubunpay-calculator.jar
-ENTRYPOINT ["java","-jar","/ubunpay-calculator.jar"]
+ADD properties/qa.application.properties application.properties
+ADD target/com.ubunpay.credit.calculator.jar com.ubunpay.credit.calculator.jar
+ENTRYPOINT ["java","-jar","/com.ubunpay.credit.calculator.jar"]

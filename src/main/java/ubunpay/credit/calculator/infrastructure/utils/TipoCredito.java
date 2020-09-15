@@ -1,13 +1,13 @@
 package ubunpay.credit.calculator.infrastructure.utils;
 
-public enum Response {
+public enum TipoCredito {
 
-    EXCEDE_CAPACIDAD_PAGO("Excede capacidad de pago"),
-    EXCEDE_CUPO("Excede cupo maximo");
+    VALUE_COMPRA_PRODUCTOS("compra productos"),
+    VALUE_LIBRE_INVERSION("libre inversion");
 
     private String value;
 
-    Response(String value) {
+    TipoCredito(String value) {
         this.value = value;
     }
 

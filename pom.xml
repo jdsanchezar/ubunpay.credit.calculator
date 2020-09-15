@@ -8,10 +8,10 @@
         <version>2.3.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ubunpay.credit</groupId>
-    <artifactId>calculator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>ubunpay.credit.calculator</name>
+    <groupId>com.ubunpay</groupId>
+    <artifactId>credit.calculator</artifactId>
+    <version>1.0</version>
+    <name>com.ubunpay.credit.calculator</name>
     <description>ubunpay.credit.calculator</description>
 
     <properties>
@@ -73,6 +73,21 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+			<groupId>ubunpay</groupId>
+			<artifactId>commons</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ubunpay</groupId>
+			<artifactId>commons.session</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ubunpay</groupId>
+			<artifactId>commons.zoho</artifactId>
+			<version>1.0</version>
+		</dependency>
     </dependencies>
 
     <build>
@@ -82,7 +97,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>ubunpay-calculator</finalName>
+        <finalName>com.ubunpay.credit.calculator</finalName>
     </build>
 
 </project>
