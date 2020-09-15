@@ -80,6 +80,11 @@
 		</dependency>
 		<dependency>
 			<groupId>ubunpay</groupId>
+			<artifactId>commons.session</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ubunpay</groupId>
 			<artifactId>commons.zoho</artifactId>
 			<version>1.0</version>
 		</dependency>

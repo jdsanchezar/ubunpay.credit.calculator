@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import ubunpay.commons.domain.model.SessionModel;
+import ubunpay.commons.session.util.SessionManagementUtil;
 import ubunpay.credit.calculator.aplication.IServiceSessionManagement;
 import ubunpay.credit.calculator.domain.model.response.CreditCalculatorResponse;
 import ubunpay.credit.calculator.domain.model.response.ErrorResponse;
@@ -38,7 +41,7 @@ public class SessionManagementController implements ISessionManagementController
     public String getMessage() {
         String name = "Heisohn";
         System.out.println(name.substring(3, 5));
-        return "V20200824_01";
+        return "V20200824_02";
     }
 
     @ApiOperation(
@@ -48,8 +51,9 @@ public class SessionManagementController implements ISessionManagementController
         CreditCalculatorResponse creditCalculatorResponse = new CreditCalculatorResponse();
         try {
         	//Hacer llamado unico al get token
-            creditCalculatorResponse = handleSessionManagement.calculateCreditProduct(token);
-            handleSessionManagement.saveInfoCredit(creditCalculatorResponse,token);
+        	SessionModel userModel = SessionManagementUtil.getUserFromToken(token);
+            creditCalculatorResponse = handleSessionManagement.calculateCreditProduct(userModel);
+            handleSessionManagement.saveInfoCredit(creditCalculatorResponse,token, userModel);
             return new ResponseEntity(creditCalculatorResponse, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse();
@@ -63,9 +67,10 @@ public class SessionManagementController implements ISessionManagementController
     @RequestMapping(value = "/getCalculateFromValue/", method = RequestMethod.GET)
     public ResponseEntity getCalculateFromValue(@RequestParam("token")String token,@RequestParam("value") Double value) {
         ErrorResponse errorResponse = new ErrorResponse();
-        try {            
-            CreditCalculatorResponse creditCalculatorResponse = handleSessionManagement.getCalculateValuesForCredit(token, value);
-            handleSessionManagement.saveInfoCredit(creditCalculatorResponse,token);
+        try {    
+        	SessionModel userModel = SessionManagementUtil.getUserFromToken(token);
+            CreditCalculatorResponse creditCalculatorResponse = handleSessionManagement.getCalculateValuesForCredit(userModel, value);
+            handleSessionManagement.saveInfoCredit(creditCalculatorResponse, token, userModel);
             return new ResponseEntity(creditCalculatorResponse, HttpStatus.ACCEPTED);
             
         } catch (Exception e) {
