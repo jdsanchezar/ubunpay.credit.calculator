@@ -11,22 +11,17 @@ import ubunpay.commons.zoho.application.service.IZohoIntegrationService;
 import ubunpay.commons.zoho.application.service.impl.ZohoIntegrationService;
 
 @SpringBootApplication
-@EntityScan({"ubunpay.commons"})
-@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
+@EntityScan({ "ubunpay.commons" })
+@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class })
 public class Application {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-    
-    @Bean
-    public IZohoIntegrationService getZohoIntegrationServiceInstance() {
-		return new ZohoIntegrationService();    	
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 
-    @Bean
-    public IZohoIntegrationService getZohoIntegrationServiceInstance() {
-		return new ZohoIntegrationService();    	
-    }
-    
+	@Bean
+	public IZohoIntegrationService getZohoIntegrationServiceInstance() {
+		return new ZohoIntegrationService();
+	}
+
 }
